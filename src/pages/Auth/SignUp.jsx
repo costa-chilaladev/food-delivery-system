@@ -20,24 +20,15 @@ export default function SignUp() {
     whatsapp_phone_number: "",
     province: "",
   });
-  const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
   const [isFirstFormCompleted, setIsFirstFormCompleted] = useState(false);
-
   const [samePhone, setSamePhone] = useState(false);
-
   const [hasUserTried, setHasUserTried] = useState(false);
-
   const [hasLoggedWithGoogle, setHasLoggedWithGoogle] = useState(false);
-
-  const [showPasswordRequirements, setShowPasswordRequirements] =
-    useState(false);
-
   const [onSignupSuccess, setOnSignupSuccess] = useState({
     show: false,
     message: "",
   });
-
   const [onSignupFailed, setOnSignupFailed] = useState({
     show: false,
     message: "",
@@ -188,61 +179,7 @@ export default function SignUp() {
                 onChange={(e) => handleChange(e)}
               />
 
-              <div>
-                crie uma nova password:
-                <div className="relative">
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                    onClick={() => setIsPasswordHidden(!isPasswordHidden)}
-                  >
-                    {isPasswordHidden ? (
-                      <LuEyeClosed size={24} />
-                    ) : (
-                      <LuEye size={24} />
-                    )}
-                  </button>
-                  <InputForm
-                    name="password"
-                    placeholder="****"
-                    type={isPasswordHidden ? "password" : "text"}
-                    className={
-                      hasUserTried && form.password == ""
-                        ? "border-red-600"
-                        : ""
-                    }
-                    onFocus={() => setShowPasswordRequirements(true)}
-                    onChange={(e) => {
-                      handleChange(e);
-                    }}
-                  />
-                </div>
-                <div className="text-left">
-                  {showPasswordRequirements &&
-                  !isPasswordAuth(form.password).result ? (
-                    <>
-                      {Object.entries(isPasswordAuth(form.password).data).map(
-                        ([, value]) => {
-                          return (
-                            <p key={value.label} className="relative">
-                              <span>{value.label}</span>{" "}
-                              <span className="absolute top-1/2 -translate-y-1/2">
-                                {value.value ? (
-                                  <FaCheckSquare />
-                                ) : (
-                                  <IoMdClose />
-                                )}
-                              </span>
-                            </p>
-                          );
-                        },
-                      )}
-                    </>
-                  ) : (
-                    <span>Password segura</span>
-                  )}
-                </div>
-              </div>
+              <PasswordInput form={form} handleChange={handleChange}/>
 
               <button
                 onClick={() => {
@@ -287,61 +224,7 @@ export default function SignUp() {
             <>
               {hasLoggedWithGoogle ? (
                 <>
-                  <div>
-                    crie uma nova password:
-                    <div className="relative">
-                      <button
-                        type="button"
-                        className="absolute right-3 top-1/2 -translate-y-1/2"
-                        onClick={() => setIsPasswordHidden(!isPasswordHidden)}
-                      >
-                        {isPasswordHidden ? (
-                          <LuEyeClosed size={24} />
-                        ) : (
-                          <LuEye size={24} />
-                        )}
-                      </button>
-                      <InputForm
-                        name="password"
-                        placeholder="****"
-                        type={isPasswordHidden ? "password" : "text"}
-                        className={
-                          hasUserTried && form.password == ""
-                            ? "border-red-600"
-                            : ""
-                        }
-                        onFocus={() => setShowPasswordRequirements(true)}
-                        onChange={(e) => {
-                          handleChange(e);
-                        }}
-                      />
-                    </div>
-                    <div className="text-left">
-                      {showPasswordRequirements &&
-                      !isPasswordAuth(form.password).result ? (
-                        <>
-                          {Object.entries(
-                            isPasswordAuth(form.password).data,
-                          ).map(([, value]) => {
-                            return (
-                              <p key={value.label} className="relative">
-                                <span>{value.label}</span>{" "}
-                                <span className="absolute top-1/2 -translate-y-1/2">
-                                  {value.value ? (
-                                    <FaCheckSquare />
-                                  ) : (
-                                    <IoMdClose />
-                                  )}
-                                </span>
-                              </p>
-                            );
-                          })}
-                        </>
-                      ) : (
-                        <span>Password segura</span>
-                      )}
-                    </div>
-                  </div>
+                  <PasswordInput form={form} handleChange={handleChange}/>
                 </>
               ) : (
                 ""
@@ -451,4 +334,52 @@ export default function SignUp() {
   );
 }
 
+function PasswordInput({form, handleChange}) {
 
+  const [isPasswordHidden, setIsPasswordHidden] = useState(true);
+  const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
+
+  return (
+    <div>
+      crie uma nova password:
+      <div className="relative">
+        <button
+          type="button"
+          className="absolute right-3 top-1/2 -translate-y-1/2"
+          onClick={() => setIsPasswordHidden(!isPasswordHidden)}
+        >
+          {isPasswordHidden ? <LuEyeClosed size={24} /> : <LuEye size={24} />}
+        </button>
+        <InputForm
+          name="password"
+          placeholder="######"
+          type={isPasswordHidden ? "password" : "text"}
+          onFocus={() => setShowPasswordRequirements(true)}
+          onChange={(e) => {
+            handleChange(e);
+          }}
+        />
+      </div>
+      <div className="text-left">
+        {showPasswordRequirements && !isPasswordAuth(form.password).result ? (
+          <>
+            {Object.entries(isPasswordAuth(form.password).data).map(
+              ([, value]) => {
+                return (
+                  <p key={value.label} className="relative">
+                    <span>{value.label}</span>{" "}
+                    <span className="absolute top-1/2 -translate-y-1/2">
+                      {value.value ? <FaCheckSquare /> : <IoMdClose />}
+                    </span>
+                  </p>
+                );
+              },
+            )}
+          </>
+        ) : (
+          <span>Password segura</span>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -18,4 +18,11 @@ If you are developing a production application, we recommend using TypeScript wi
 
 28/06/2026 (5h-7h10) => criação de função para nao só testar se a password está correta como tbm para devolver um dicionario explicando oq falta, mostrar parametros de password dinamicos, login com google funcional (pedir password na segunda etapa do formulario de subscrição caso o singup tenha sido feito com google), correção de línguagem no formulario de inscrição (avançar e signup) cada um na etapa certa. Há um pequeno bug visual ao completar os parametros da passe, um simbolo de x aparece apesar de o resto ter sido apagado e preciso replicar as mudanças no segundo campo da password (para quem logga com o google)
 
-30/06/2026 (5h - ) => Bugs visuais limpos e segundo campo do input funcionando
+30/06/2026 (5h - ) => Bugs visuais limpos e segundo campo do input funcionando, backend criado e conectado, só falta a API do front. 
+
+01/07/2026 => Signup funcionando perfeitamente.
+
+A fazer:
+- regex do email
+- FAZER animação para inputs do signin e signup
+-  anotações sobre criação de backend em js

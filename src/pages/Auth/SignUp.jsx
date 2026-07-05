@@ -8,6 +8,7 @@ import { GoogleLogin, googleLogout } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { getCities } from "../../services/apiClient.js";
 import { isPasswordAuth } from "../../features/auth/passwordAuth.js";
+import { registerUser } from "../../services/apiClient.js";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function SignUp() {
     password: "",
     phone_number: "",
     whatsapp_phone_number: "",
-    city: "",
+    province: "",
   });
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
@@ -31,6 +32,16 @@ export default function SignUp() {
 
   const [showPasswordRequirements, setShowPasswordRequirements] =
     useState(false);
+
+  const [onSignupSuccess, setOnSignupSuccess] = useState({
+    show: false,
+    message: "",
+  });
+
+  const [onSignupFailed, setOnSignupFailed] = useState({
+    show: false,
+    message: "",
+  });
 
   const cities = getCities();
 
@@ -52,9 +63,41 @@ export default function SignUp() {
     });
   }
 
-  function handleForm(e) {
+  async function handleForm(e) {
     e.preventDefault();
-    console.log(form);
+
+    if (
+      form.phone_number === "" ||
+      form.whatsapp_phone_number === "" ||
+      form.province === ""
+    ) {
+      setHasUserTried(true);
+      return;
+    }
+
+    setOnSignupSuccess({ show: false, message: "" });
+    setOnSignupFailed({ show: false, message: "" });
+
+    try {
+      const response = await registerUser(form);
+
+      if (response?.onSuccess) {
+        setOnSignupSuccess({
+          show: true,
+          message: response.message || "Cadastro realizado com sucesso.",
+        });
+      } else {
+        setOnSignupFailed({
+          show: true,
+          message: response?.message || "Não foi possível concluir o cadastro.",
+        });
+      }
+    } catch (error) {
+      setOnSignupFailed({
+        show: true,
+        message: "Não foi possível conectar ao servidor. Tente novamente.",
+      });
+    }
   }
 
   function handleSignUpWithGoogle(credentialResponse) {
@@ -72,6 +115,42 @@ export default function SignUp() {
   function handleFormStep() {
     setHasUserTried(false);
     setIsFirstFormCompleted(!isFirstFormCompleted);
+  }
+
+  if (onSignupSuccess.show) {
+    return (
+      <section className="fixed inset-0 flex items-center justify-center">
+        <div className="shadow-lg bg-white p-6 rounded-lg">
+          <h1 className="text-xl font-bold text-center">
+            Cadastro realizado com sucesso
+          </h1>
+          <p>{onSignupSuccess.message}</p>
+          <button
+            className="cursor-pointer hover:underline"
+            onClick={() => navigate("/signin")}
+          >
+            Ir para o login
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  if (onSignupFailed.show) {
+    return (
+      <section className="fixed inset-0 flex items-center justify-center">
+        <div className="shadow-lg bg-white p-6 rounded-lg">
+          <h1 className="text-xl font-bold text-center">Falha no cadastro</h1>
+          <p>{onSignupFailed.message}</p>
+          <button
+            className="cursor-pointer hover:underline"
+            onClick={() => setOnSignupFailed({ show: false, message: "" })}
+          >
+            Tentar outra vez
+          </button>
+        </div>
+      </section>
+    );
   }
 
   return (
@@ -143,7 +222,7 @@ export default function SignUp() {
                   !isPasswordAuth(form.password).result ? (
                     <>
                       {Object.entries(isPasswordAuth(form.password).data).map(
-                        ([key, value]) => {
+                        ([, value]) => {
                           return (
                             <p key={value.label} className="relative">
                               <span>{value.label}</span>{" "}
@@ -243,7 +322,7 @@ export default function SignUp() {
                         <>
                           {Object.entries(
                             isPasswordAuth(form.password).data,
-                          ).map(([key, value]) => {
+                          ).map(([, value]) => {
                             return (
                               <p key={value.label} className="relative">
                                 <span>{value.label}</span>{" "}
@@ -337,15 +416,15 @@ export default function SignUp() {
               </label>
 
               <select
-                name="city"
+                name="province"
                 className={
-                  hasUserTried && form.city == "" ? "border-red-600" : ""
+                  hasUserTried && form.province == "" ? "border-red-600" : ""
                 }
                 onChange={(e) => handleChange(e)}
               >
-                {cities.map((city) => (
-                  <option key={city} value={city}>
-                    {city}
+                {cities.map((province) => (
+                  <option key={province} value={province}>
+                    {province}
                   </option>
                 ))}
               </select>
@@ -353,22 +432,7 @@ export default function SignUp() {
               <button type="button" onClick={() => handleFormStep()}>
                 Back
               </button>
-              <button
-                type="submit"
-                onClick={(e) => {
-                  if (
-                    form.phone_number == "" ||
-                    form.whatsapp_phone_number == "" ||
-                    form.city == ""
-                  ) {
-                    setHasUserTried(true);
-                    return;
-                  }
-                  handleForm(e);
-                }}
-              >
-                Signup
-              </button>
+              <button type="submit">Signup</button>
             </>
           )}
         </form>
@@ -386,3 +450,5 @@ export default function SignUp() {
     </section>
   );
 }
+
+

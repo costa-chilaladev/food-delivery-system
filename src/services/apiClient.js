@@ -1,6 +1,6 @@
 import angola from "/src/data/angola.json";
 
-export function getCities() {
+export function getProvinces() {
   return angola;
 }
 

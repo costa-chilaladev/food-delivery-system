@@ -6,7 +6,7 @@ import { IoMdClose } from "react-icons/io";
 import InputForm from "/src/components/ui/Inputs.jsx";
 import { GoogleLogin, googleLogout } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
-import { getCities } from "../../services/apiClient.js";
+import { getProvinces } from "../../services/apiClient.js";
 import { isPasswordAuth } from "../../features/auth/passwordAuth.js";
 import { registerUser } from "../../services/apiClient.js";
 
@@ -22,7 +22,6 @@ export default function SignUp() {
   });
 
   const [isFirstFormCompleted, setIsFirstFormCompleted] = useState(false);
-  const [samePhone, setSamePhone] = useState(false);
   const [hasUserTried, setHasUserTried] = useState(false);
   const [hasLoggedWithGoogle, setHasLoggedWithGoogle] = useState(false);
   const [onSignupSuccess, setOnSignupSuccess] = useState({
@@ -33,15 +32,6 @@ export default function SignUp() {
     show: false,
     message: "",
   });
-
-  const cities = getCities();
-
-  const formatPhone = (value) => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/(\d{3})(?=\d)/g, "$1 ")
-      .trim();
-  };
 
   function handleLogout() {
     googleLogout();
@@ -158,164 +148,31 @@ export default function SignUp() {
         <h1 className="">Sign up free</h1>
         <form className="grid gap-y-4 w-full" onSubmit={handleForm}>
           {!isFirstFormCompleted ? (
-            <>
-              <InputForm
-                type="text"
-                name="name"
-                placeholder="joao"
-                className={
-                  hasUserTried && form.name == "" ? "border-red-600" : ""
-                }
-                onChange={(e) => handleChange(e)}
-              />
-
-              <InputForm
-                type="email"
-                name="email"
-                placeholder="joao@email.com"
-                className={
-                  hasUserTried && form.email == "" ? "border-red-600" : ""
-                }
-                onChange={(e) => handleChange(e)}
-              />
-
-              <PasswordInput form={form} handleChange={handleChange}/>
-
-              <button
-                onClick={() => {
-                  if (
-                    form.name == "" ||
-                    form.email == "" ||
-                    form.password == ""
-                  ) {
-                    setHasUserTried(true);
-                    return;
-                  }
-
-                  const passwordValidation = isPasswordAuth(form.password);
-
-                  if (!passwordValidation.result) {
-                    return;
-                  }
-
-                  handleFormStep();
-                }}
-                className="bg-blue-500 p-2 rounded-md"
-                type="button"
-              >
-                Avançar
-              </button>
-
-              <div className="w-full">
-                <GoogleLogin
-                  className="w-full"
-                  onSuccess={(credentialResponse) => {
-                    handleSignUpWithGoogle(
-                      jwtDecode(credentialResponse.credential),
-                    );
-                  }}
-                  onError={() => console.log("Login Failed")}
-                  auto_select={false}
-                  theme="filled_black"
-                />
-              </div>
-            </>
+            <SignupStepOne
+              form={form}
+              handleChange={handleChange}
+              hasUserTried={hasUserTried}
+              setHasUserTried={setHasUserTried}
+              handleFormStep={handleFormStep}
+              handleSignUpWithGoogle={handleSignUpWithGoogle}
+            />
           ) : (
             <>
               {hasLoggedWithGoogle ? (
                 <>
-                  <PasswordInput form={form} handleChange={handleChange}/>
+                  <PasswordInput form={form} handleChange={handleChange} />
                 </>
               ) : (
                 ""
               )}
-              <label htmlFor="">
-                Digite o seu número de telefone (podemos usa-lo para
-                contacta-lo)
-              </label>
-              <InputForm
-                name="phone_number"
-                placeholder="999 999 999"
-                type="text"
-                inputMode="numeric"
-                value={form.phone_number}
-                className={
-                  hasUserTried && form.phone_number == ""
-                    ? "border-red-600"
-                    : ""
-                }
-                onChange={(e) => {
-                  const formatted = formatPhone(e.target.value);
-
-                  setForm((prev) => ({
-                    ...prev,
-                    phone_number: formatted,
-                    whatsapp_phone_number: samePhone
-                      ? formatted
-                      : prev.whatsapp_phone_number,
-                  }));
-                }}
+              <SignupStepTwo
+                form={form}
+                hasLoggedWithGoogle={hasLoggedWithGoogle}
+                handleChange={handleChange}
+                hasUserTried={hasUserTried}
+                setForm={setForm}
+                handleFormStep={handleFormStep}
               />
-
-              <label htmlFor="">Digite seu número do whatsapp</label>
-              <InputForm
-                name="whatsapp_phone_number"
-                value={form.whatsapp_phone_number}
-                placeholder="999 999 999"
-                type="text"
-                disabled={samePhone}
-                className={
-                  hasUserTried && form.whatsapp_phone_number == ""
-                    ? "border-red-600"
-                    : ""
-                }
-                inputMode="numeric"
-                onChange={(e) => {
-                  const formatted = formatPhone(e.target.value);
-
-                  setForm((prev) => ({
-                    ...prev,
-                    whatsapp_phone_number: formatted,
-                  }));
-                }}
-              />
-
-              <label className="flex items-center justify-end gap-2">
-                <span>usar o mesmo número</span>
-                <input
-                  type="checkbox"
-                  checked={samePhone}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    setSamePhone(checked);
-                    setForm((prev) => ({
-                      ...prev,
-                      whatsapp_phone_number: checked
-                        ? prev.phone_number
-                        : prev.whatsapp_phone_number,
-                    }));
-                  }}
-                />
-              </label>
-
-              <select
-                name="province"
-                className={
-                  hasUserTried && form.province == "" ? "border-red-600" : ""
-                }
-                onChange={(e) => handleChange(e)}
-              >
-                {cities.map((province) => (
-                  <option key={province} value={province}>
-                    {province}
-                  </option>
-                ))}
-              </select>
-
-              <button type="button" onClick={() => handleFormStep()}>
-                Back
-              </button>
-              <button type="submit">Signup</button>
             </>
           )}
         </form>
@@ -334,13 +191,205 @@ export default function SignUp() {
   );
 }
 
-function PasswordInput({form, handleChange}) {
+function SignupStepOne({
+  form,
+  handleChange,
+  hasUserTried,
+  setHasUserTried,
+  handleFormStep,
+  handleSignUpWithGoogle,
+}) {
+  return (
+    <section>
+      <InputForm
+        type="text"
+        name="name"
+        className={hasUserTried && form.name == "" ? "border-red-500" : ""}
+        placeholder="joao"
+        onChange={(e) => handleChange(e)}
+      />
 
-  const [isPasswordHidden, setIsPasswordHidden] = useState(true);
-  const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
+      <InputForm
+        type="email"
+        name="email"
+        className={hasUserTried && form.email == "" ? "border-red-500" : ""}
+        placeholder="joao@email.com"
+        onChange={(e) => handleChange(e)}
+      />
+
+      <PasswordInput
+        form={form}
+        handleChange={handleChange}
+        hasUserTried={hasUserTried}
+      />
+
+      <button
+        onClick={() => {
+          if (form.name == "" || form.email == "" || form.password == "") {
+            setHasUserTried(true);
+            return;
+          }
+          const passwordValidation = isPasswordAuth(form.password);
+          if (!passwordValidation.result) {
+            return;
+          }
+          handleFormStep();
+        }}
+        className="bg-blue-500 p-2 rounded-md"
+        type="button"
+      >
+        Avançar
+      </button>
+
+      <ButtonGoogleSignup handleSignUpWithGoogle={handleSignUpWithGoogle} />
+    </section>
+  );
+}
+
+function SignupStepTwo({
+  form,
+  hasLoggedWithGoogle,
+  handleChange,
+  hasUserTried,
+  setForm,
+  handleFormStep,
+}) {
+
+  const provinces = getProvinces();
+
+  const [samePhone, setSamePhone] = useState(false);
 
   return (
+    <section>
+      {hasLoggedWithGoogle ? (
+        <>
+          <PasswordInput form={form} handleChange={handleChange} />
+        </>
+      ) : (
+        ""
+      )}
+      
+      <PhoneFields form={form} setForm={setForm} samePhone={samePhone} setSamePhone={setSamePhone} hasUserTried={hasUserTried} />
+
+      <select
+        name="province"
+        className={hasUserTried && form.province == "" ? "border-red-600" : ""}
+        onChange={(e) => handleChange(e)}
+      >
+        {provinces.map((province) => (
+          <option key={province} value={province}>
+            {province}
+          </option>
+        ))}
+      </select>
+
+      <button type="button" onClick={() => handleFormStep()}>
+        Back
+      </button>
+      <button type="submit">Signup</button>
+    </section>
+  );
+}
+
+function PhoneFields({form, setForm, samePhone, setSamePhone, hasUserTried}) {
+  const formatPhone = (value) => {
+    return value
+      .replace(/\D/g, "")
+      .replace(/(\d{3})(?=\d)/g, "$1 ")
+      .trim();
+  };
+  
+  return (
     <div>
+      <label htmlFor="">
+          Digite o seu número de telefone (podemos usa-lo para contacta-lo)
+        </label>
+        <InputForm
+          name="phone_number"
+          placeholder="999 999 999"
+          type="text"
+          inputMode="numeric"
+          value={form.phone_number}
+          className={
+            hasUserTried && form.phone_number == "" ? "border-red-600" : ""
+          }
+          onChange={(e) => {
+            const formatted = formatPhone(e.target.value);
+            setForm((prev) => ({
+              ...prev,
+              phone_number: formatted,
+              whatsapp_phone_number: samePhone
+                ? formatted
+                : prev.whatsapp_phone_number,
+            }));
+          }}
+        />
+        <label htmlFor="">Digite seu número do whatsapp</label>
+        <InputForm
+          name="whatsapp_phone_number"
+          value={form.whatsapp_phone_number}
+          placeholder="999 999 999"
+          type="text"
+          disabled={samePhone}
+          className={
+            hasUserTried && form.whatsapp_phone_number == ""
+              ? "border-red-600"
+              : ""
+          }
+          inputMode="numeric"
+          onChange={(e) => {
+            const formatted = formatPhone(e.target.value);
+            setForm((prev) => ({
+              ...prev,
+              whatsapp_phone_number: formatted,
+            }));
+          }}
+        />
+
+        <label className="flex items-center justify-end gap-2">
+        <span>usar o mesmo número</span>
+        <input
+          type="checkbox"
+          checked={samePhone}
+          onChange={(e) => {
+            const checked = e.target.checked;
+            setSamePhone(checked);
+            setForm((prev) => ({
+              ...prev,
+              whatsapp_phone_number: checked
+                ? prev.phone_number
+                : prev.whatsapp_phone_number,
+            }));
+          }}
+        />
+      </label>
+    </div>
+  )
+}
+
+function ButtonGoogleSignup({ handleSignUpWithGoogle }) {
+  return (
+    <div className="w-full">
+      <GoogleLogin
+        className="w-full"
+        onSuccess={(credentialResponse) => {
+          handleSignUpWithGoogle(jwtDecode(credentialResponse.credential));
+        }}
+        onError={() => console.log("Login Failed")}
+        auto_select={false}
+        theme="filled_black"
+      />
+    </div>
+  );
+}
+
+function PasswordInput({ form, handleChange, hasUserTried }) {
+  const [isPasswordHidden, setIsPasswordHidden] = useState(true);
+  const [showPasswordRequirements, setShowPasswordRequirements] =
+    useState(false);
+
+  return (
+    <section>
       crie uma nova password:
       <div className="relative">
         <button
@@ -354,6 +403,9 @@ function PasswordInput({form, handleChange}) {
           name="password"
           placeholder="######"
           type={isPasswordHidden ? "password" : "text"}
+          className={
+            hasUserTried && form.password == "" ? "border-red-500" : ""
+          }
           onFocus={() => setShowPasswordRequirements(true)}
           onChange={(e) => {
             handleChange(e);
@@ -380,6 +432,6 @@ function PasswordInput({form, handleChange}) {
           <span>Password segura</span>
         )}
       </div>
-    </div>
+    </section>
   );
 }

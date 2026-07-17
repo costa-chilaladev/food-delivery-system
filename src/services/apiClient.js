@@ -1,7 +1,29 @@
-import angola from "/src/data/angola.json";
 
-export function getProvinces() {
-  return angola;
+
+export async function login(userInfo) {
+  try {
+    const response = await fetch("http://localhost:3000/api/users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: userInfo.email,
+        password: userInfo.password
+      })
+    })
+
+    const data = await response.json()
+
+    return data
+  }
+
+  catch (error) {
+    return {
+      onSuccess: false,
+      message: "Não foi possível conectar ao servidor. Tente novamente.",
+    };
+  }
 }
 
 export async function registerUser(userInfo) {
@@ -17,7 +39,7 @@ export async function registerUser(userInfo) {
         password: userInfo.password,
         phoneNumber: userInfo.phone_number,
         whatsappPhoneNumber: userInfo.whatsapp_phone_number,
-        province: userInfo.province,
+        delivery_zone: userInfo.delivery_zone,
       }),
     });
 
@@ -37,4 +59,29 @@ export async function registerUser(userInfo) {
       message: "Não foi possível conectar ao servidor. Tente novamente.",
     };
   }
+}
+
+export async function getDeliveryZones() {
+  const response = await fetch("http://localhost:3000/api/users/delivery_zones");
+  if (!response.ok) {
+    throw new Error("Failed to fetch delivery zones");
+  }
+
+  const data = await response.json();
+  return data.data;
+}
+
+export async function getUserInfo() {
+
+  const token = localStorage.getItem("token")
+
+  const response = await fetch("http://localhost:3000/api/users/me", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  const data = await response.json()
+
+  return data
 }

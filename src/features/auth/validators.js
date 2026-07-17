@@ -1,4 +1,9 @@
-export function isPasswordAuth(password) {
+export function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+}
+
+export function isValidPassword(password) {
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
@@ -15,7 +20,10 @@ export function isPasswordAuth(password) {
   return {
     result: false,
     data: {
-      minLength: { label: "at last 8 letters", value: minLength.test(password) },
+      minLength: {
+        label: "at last 8 letters",
+        value: minLength.test(password),
+      },
       lowercase: {
         label: "at last one lowercase letter",
         value: hasLowercase.test(password),
@@ -29,6 +37,6 @@ export function isPasswordAuth(password) {
         label: "at last one special character",
         value: hasSymbol.test(password),
       },
-    }
+    },
   };
 }

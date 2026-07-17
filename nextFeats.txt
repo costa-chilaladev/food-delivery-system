@@ -1,0 +1,2 @@
+- login com número de celular
+- regex para email

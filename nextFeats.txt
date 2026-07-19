@@ -1,2 +1,3 @@
 - login com número de celular
 - regex para email
+- loading para transição entre paginas

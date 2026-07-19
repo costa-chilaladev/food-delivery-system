@@ -5,7 +5,7 @@ import { IoArrowBack } from "react-icons/io5";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import GoogleSignupButton from "/src/components/auth/GoogleSignupButton.jsx";
 import { isValidEmail } from "/src/features/auth/validators.js";
-import { login, getUserInfo } from "/src/services/apiClient.js";
+import { login } from "/src/services/apiClient.js";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -44,12 +44,15 @@ export default function SignIn() {
 
     const data = await login(form)
 
-    localStorage.setItem("token", data.token)
+    if (data.onSuccess) {
+      localStorage.setItem("token", data.token)
+      localStorage.setItem("userName", data.userName)
+      navigate("/home")
+    }
 
-    console.log(data)
-
-    const test = await getUserInfo()
-    console.log("teste de rota protegida:", test)
+    else {
+      console.log(data)
+    }
   }
 
   function handleSignUpWithGoogle(user) {

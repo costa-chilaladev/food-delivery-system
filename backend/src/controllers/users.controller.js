@@ -15,7 +15,7 @@ export const login = async (req, res) => {
     }
 
     const [users] = await db.query(
-      "SELECT id, role, password_hash FROM users WHERE email=?",
+      "SELECT id, name, role, password_hash FROM users WHERE email=?",
       [email],
     );
 
@@ -50,7 +50,8 @@ export const login = async (req, res) => {
 
     return res.status(200).json({
       onSuccess: true,
-      "token": token,
+      token: token,
+      userName: user.name,
       message: "user logged successfully",
     });
   } catch (error) {

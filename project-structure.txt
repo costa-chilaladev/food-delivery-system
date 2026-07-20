@@ -1,0 +1,132 @@
+Projeto: food-delivery-system
+
+Descrição: Estrutura hierárquica de pastas e ficheiros (gerado automaticamente).
+
+root/
+- .gitattributes
+- .gitignore
+- LICENSE
+- README.md
+- index.html
+- nextFeats.txt
+- package-lock.json
+- package.json
+- postcss.config.js
+- tailwind.config.js
+- vite.config.js
+- eslint.config.js
+
+- backend/
+  - package.json
+  - package-lock.json
+  - .env
+  - src/
+    - server.js
+    - config/
+      - database.js
+    - controllers/
+      - products.controller.js
+      - users.controller.js
+    - middlewares/
+      - auth.middleware.js
+    - routes/
+      - products.routes.js
+      - users.routes.js
+
+- public/
+  - favicon.svg
+  - icons.svg
+
+- src/
+  - App.jsx
+  - App.css
+  - main.jsx
+  - index.css
+  - index.css (duplicate reference if any)
+
+  - assets/
+    - icons/
+      - vite.svg
+      - react.svg
+    - images/
+      - burguer_vector_original.png
+      - burguer_vector.png
+      - products/
+        - licença.txt
+        - burgers/
+          - example.jpg
+          - hamburguer_classic.jpg
+          - cheeseburger.jpg
+          - baconburger.jpg
+          - chickenburger.jpg
+          - doublecheeseburg.jpg
+          - specialdonaana.jpg
+          - veggieburger.jpg
+        - desserts/
+          - brownie.jpg
+          - cheesecake.png
+          - chocolate_sundae.jpg
+          - vanilla_cone.jpg
+        - drinks/
+          - cocacola.jpg
+          - fanta_orange.jpg
+          - mineral_water.jpg
+          - natural_juice.jpg
+          - sprite.jpg
+        - pizzas/
+          - chickenpizza.jpg
+          - fourcheesepizza.jpg
+          - pizzacalabresa.jpg
+          - pizzamargherita.jpg
+          - pizzasdonaanaspecialpizza.jpg
+          - tunapizza.jpg
+        - sides/
+          - chicken_wings.jpg
+          - large_fries.jpg
+          - nuggets_6pc.jpg
+          - onion_rings.jpg
+          - small_fries.jpg
+        - special/
+          - chicken_wrap.jpg
+          - special_hot_dog.jpg
+  - components/
+    - auth/
+      - GoogleSignupButton.jsx
+      - PasswordInput.jsx
+    - common/
+      - foodCard.jsx
+    - ui/
+      - Inputs.jsx
+  - data/
+    - angola.json
+  - features/
+    - auth/
+      - validators.js
+  - hooks/
+    - useCart.js
+    - useMenu.js
+  - pages/
+    - Auth/
+      - SignIn.jsx
+      - SignUp.jsx
+    - Home/
+      - Home.jsx
+    - LandingPage/
+      - LandingPage.jsx
+      - assets/
+        - images/
+          - heroImage.jpg
+  - services/
+    - apiClient.js
+    - cartService.js
+    - menuService.js
+    - orderService.js
+  - utils/
+    - formatPhone.js
+
+
+Observações:
+- A lista foi gerada a partir dos ficheiros encontrados no workspace.
+- Se quiser incluir ficheiros ocultos ou ignorados por .gitignore, diga-me para reexecutar com outra opção.
+
+Fim do ficheiro.

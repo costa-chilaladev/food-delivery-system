@@ -9,7 +9,9 @@ import { formatPhone } from "/src/utils/formatPhone.js";
 
 import GoogleSignupButton from "/src/components/auth/GoogleSignupButton.jsx";
 
-import { getDeliveryZones, registerUser } from "/src/services/apiClient.js";
+import { registerUser } from "/src/services/authService.js";
+
+import { getDeliveryZones } from "/src/services/orderService.js";
 
 export default function SignUp() {
   const navigate = useNavigate();

@@ -5,7 +5,7 @@ import { IoArrowBack } from "react-icons/io5";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import GoogleSignupButton from "/src/components/auth/GoogleSignupButton.jsx";
 import { isValidEmail } from "/src/features/auth/validators.js";
-import { login } from "/src/services/apiClient.js";
+import { login } from "/src/services/authService.js";
 
 export default function SignIn() {
   const navigate = useNavigate();

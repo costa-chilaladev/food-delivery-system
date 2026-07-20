@@ -1,10 +1,13 @@
-import { getCategories as getCategoriesService } from "/src/services/menuService.js";
+import {
+  getCategories as getCategoriesService,
+  getProductsByCategoryId,
+} from "/src/services/menuService.js";
 import { useState, useEffect } from "react";
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
   const [openModal, setOpenModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(0)
+  const [selectedCategory, setSelectedCategory] = useState(0);
 
   useEffect(() => {
     const getCategories = async () => {
@@ -16,7 +19,7 @@ export default function Home() {
   }, []);
 
   function handleOpenModal(category) {
-    setSelectedCategory(category)
+    setSelectedCategory(category);
     setOpenModal(true);
   }
 
@@ -38,13 +41,13 @@ export default function Home() {
         ))}
       </section>
 
-      {openModal && <Modal categoryId={selectedCategory}/>}
+      {openModal && <Modal categoryId={selectedCategory} />}
     </main>
   );
 }
 
 function CategoryCard({ title, categoryId, img_url, handleOpenModal }) {
-  const baseImagesPath = "/src/assets/images/";
+  const IconImagesBaseUrl = "/src/assets/images/";
 
   return (
     <section
@@ -53,7 +56,7 @@ function CategoryCard({ title, categoryId, img_url, handleOpenModal }) {
     >
       <img
         className="w-full h-full object-cover transition duration-500 group-hover:brightness-90"
-        src={baseImagesPath + img_url}
+        src={IconImagesBaseUrl + img_url}
         alt={"img: " + title}
       />
 
@@ -71,5 +74,24 @@ function CategoryCard({ title, categoryId, img_url, handleOpenModal }) {
 }
 
 function Modal({ categoryId }) {
-  return <section></section>;
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const getProducts = async () => {
+      const fetchedProducts = await getProductsByCategoryId(categoryId);
+      setProducts(fetchedProducts);
+    };
+
+    getProducts();
+  }, [categoryId]);
+
+  console.log(products);
+
+  return (
+    <section className="w-full h-[95vh] p-2 absolute bottom-0 z-50 bg-slate-500">
+      <section className="relative w-full h-full p-2">
+        <button className="absolute top-2 right-2 ">X</button>
+      </section>
+    </section>
+  );
 }

@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import userRoutes from "./routes/users.routes.js";
 import productRoutes from "./routes/shop.routes.js";
+import cron from 'node-cron';
 
 dotenv.config();
 
@@ -19,8 +20,14 @@ app.use(express.json());
 app.use("/api/users", userRoutes);
 app.use("/api/shop", productRoutes);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; 
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+/*
+cron.schedule('* * * * *', () => {
+  console.log('Hello from node-cron', new Date());
+});
+*/
